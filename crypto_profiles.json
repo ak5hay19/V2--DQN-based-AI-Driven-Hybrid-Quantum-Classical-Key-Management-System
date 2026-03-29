@@ -21,8 +21,8 @@
     },
     "qkd": {
         "name": "BB84 / CV-QKD (simulated)",
-        "key_gen_ms": 80.0,
-        "key_exchange_ms": 150.0,
+        "key_gen_ms": 50.0,
+        "key_exchange_ms": 80.0,
         "encrypt_per_kb_ms": 0.002,
         "key_size_bytes": 256,
         "cpu_cycles_keygen": 50000,
@@ -30,14 +30,14 @@
         "max_security_level": 5
     },
     "threat_vulnerability": {
-        "classical": { "benign": 0.95, "recon": 0.70, "active_attack": 0.20 },
-        "pqc":       { "benign": 0.80, "recon": 0.85, "active_attack": 0.80 },
-        "qkd":       { "benign": 0.25, "recon": 0.35, "active_attack": 0.95 },
-        "reuse":     { "benign": 0.85, "recon": 0.35, "active_attack": 0.05 },
-        "refresh":   { "benign": 0.65, "recon": 0.60, "active_attack": 0.50 }
+        "classical": { "benign": 0.95, "recon": 0.70, "active_attack": 0.15 },
+        "pqc":       { "benign": 0.75, "recon": 0.80, "active_attack": 0.72 },
+        "qkd":       { "benign": 0.20, "recon": 0.30, "active_attack": 1.00 },
+        "reuse":     { "benign": 0.88, "recon": 0.30, "active_attack": 0.05 },
+        "refresh":   { "benign": 0.60, "recon": 0.55, "active_attack": 0.45 }
     },
     "normalization": {
-        "max_latency_ms": 200.0,
-        "max_energy_cycles": 1000000
+        "max_latency_ms": 300.0,
+        "max_energy_cycles": 1200000
     }
 }

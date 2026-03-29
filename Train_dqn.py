@@ -1,12 +1,9 @@
 """
-Train_dqn.py
-============
-Trains a DQN agent on HybridKeyEnv.
+Train_dqn.py — DQN training with proper exploration schedule.
 
-Usage:
-    python Train_dqn.py                      # 7-dim state
-    python Train_dqn.py --use-lstm           # 8-dim with LSTM
-    python Train_dqn.py --episodes 2000      # more episodes
+Key fix: epsilon decays much slower (0.9993 vs 0.997) so the agent
+keeps exploring QKD at high threat levels instead of collapsing
+to always-PQC early in training.
 """
 
 import argparse
@@ -17,7 +14,7 @@ from dqn_agent import DQNAgent
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--use-lstm", action="store_true")
-parser.add_argument("--episodes", type=int, default=1500)
+parser.add_argument("--episodes", type=int, default=2000)
 args = parser.parse_args()
 
 STATE_DIM = 7
@@ -35,17 +32,28 @@ MAX_STEPS = 200
 AUG_LOW, AUG_MID, AUG_HIGH = 0.15, 0.25, 0.35
 
 env   = HybridKeyEnv("state_vectors.csv")
-agent = DQNAgent(state_dim=STATE_DIM, num_actions=NUM_ACTIONS,
-                 lr=1e-3, gamma=0.95, epsilon=1.0, epsilon_min=0.05,
-                 epsilon_decay=0.997, batch_size=64, buffer_size=50000,
-                 target_update=200)
+agent = DQNAgent(
+    state_dim=STATE_DIM,
+    num_actions=NUM_ACTIONS,
+    lr=5e-4,              # slightly lower LR for stability
+    gamma=0.95,
+    epsilon=1.0,
+    epsilon_min=0.05,
+    epsilon_decay=0.9993,  # SLOWER decay: reaches 0.05 at ~ep 1500 instead of ~ep 600
+    batch_size=64,
+    buffer_size=80000,     # larger buffer to remember more diverse experiences
+    target_update=300,     # update target less frequently for stability
+)
 
 print(f"\nTraining DQN agent...")
-print(f"  Episodes   : {args.episodes}")
-print(f"  State dim  : {STATE_DIM}")
-print(f"  Network    : {STATE_DIM} -> 128 -> 64 -> {NUM_ACTIONS}")
-print(f"  Device     : {agent.device}")
-print(f"  Threat aug : low={AUG_LOW} mid={AUG_MID} high={AUG_HIGH}\n")
+print(f"  Episodes     : {args.episodes}")
+print(f"  State dim    : {STATE_DIM}")
+print(f"  Network      : {STATE_DIM} -> 128 -> 64 -> {NUM_ACTIONS}")
+print(f"  Device       : {agent.device}")
+print(f"  Eps decay    : {agent.epsilon_decay} (reaches 0.05 ~ep 1500)")
+print(f"  Buffer       : {agent.buffer.buffer.maxlen:,}")
+print(f"  Target update: every {agent.target_update} steps")
+print(f"  Threat aug   : low={AUG_LOW} mid={AUG_MID} high={AUG_HIGH}\n")
 print(f"{'Ep':>6}  {'Reward':>8}  {'Eps':>6}  {'Loss':>8}  {'Avg50':>8}")
 print("-" * 46)
 
