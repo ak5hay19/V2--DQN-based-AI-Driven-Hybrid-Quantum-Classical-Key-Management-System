@@ -26,7 +26,9 @@ key = key.sample(n=N, replace=True, random_state=42).reset_index(drop=True)
 WINDOW = 50
 rho = pd.Series(key["x_pe"].values).rolling(WINDOW, min_periods=10).corr(
     pd.Series(key["y_pe"].values))
-rho = rho.fillna(method="bfill").fillna(0.5).values
+#depricated method not working rho = rho.fillna(method="bfill").fillna(0.5).values
+rho = rho.bfill().fillna(0.5).values #fixed method , earlier mthod error
+
 rho = np.clip(rho, 0.01, 0.99)
 
 excess = (1 - rho) + np.random.normal(0, 0.015, N)
