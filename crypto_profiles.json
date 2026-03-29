@@ -1,0 +1,43 @@
+{
+    "classical": {
+        "name": "ECDH-P256 + AES-256-GCM",
+        "key_gen_ms": 0.5,
+        "key_exchange_ms": 1.0,
+        "encrypt_per_kb_ms": 0.002,
+        "key_size_bytes": 32,
+        "cpu_cycles_keygen": 150000,
+        "nist_security_level": 2,
+        "max_security_level": 5
+    },
+    "pqc": {
+        "name": "Kyber-768 + Dilithium-3",
+        "key_gen_ms": 0.2,
+        "key_exchange_ms": 0.3,
+        "encrypt_per_kb_ms": 0.005,
+        "key_size_bytes": 1088,
+        "cpu_cycles_keygen": 350000,
+        "nist_security_level": 3,
+        "max_security_level": 5
+    },
+    "qkd": {
+        "name": "BB84 / CV-QKD (simulated)",
+        "key_gen_ms": 80.0,
+        "key_exchange_ms": 150.0,
+        "encrypt_per_kb_ms": 0.002,
+        "key_size_bytes": 256,
+        "cpu_cycles_keygen": 50000,
+        "nist_security_level": 5,
+        "max_security_level": 5
+    },
+    "threat_vulnerability": {
+        "classical": { "benign": 0.95, "recon": 0.70, "active_attack": 0.20 },
+        "pqc":       { "benign": 0.80, "recon": 0.85, "active_attack": 0.80 },
+        "qkd":       { "benign": 0.25, "recon": 0.35, "active_attack": 0.95 },
+        "reuse":     { "benign": 0.85, "recon": 0.35, "active_attack": 0.05 },
+        "refresh":   { "benign": 0.65, "recon": 0.60, "active_attack": 0.50 }
+    },
+    "normalization": {
+        "max_latency_ms": 200.0,
+        "max_energy_cycles": 1000000
+    }
+}
