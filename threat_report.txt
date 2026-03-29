@@ -1,0 +1,35 @@
+Classifier: BalancedRF
+
+              precision    recall  f1-score   support
+
+  Low/Benign       0.99      0.98      0.99      2451
+      Medium       0.98      1.00      0.99      3127
+        High       1.00      1.00      1.00     19046
+
+    accuracy                           1.00     24624
+   macro avg       0.99      0.99      0.99     24624
+weighted avg       1.00      1.00      1.00     24624
+
+  fwd_pkts_payload.avg                0.2057
+  payload_bytes_per_second            0.1043
+  fwd_iat.avg                         0.0973
+  active.avg                          0.0823
+  flow_pkts_payload.avg               0.0652
+  bwd_iat.avg                         0.0608
+  flow_duration                       0.0557
+  flow_pkts_payload.std               0.0510
+  flow_SYN_flag_count                 0.0357
+  bwd_pkts_per_sec                    0.0356
+  bwd_pkts_payload.avg                0.0331
+  fwd_pkts_per_sec                    0.0296
+  flow_pkts_per_sec                   0.0278
+  bwd_pkts_payload.std                0.0225
+  fwd_header_size_tot                 0.0206
+  fwd_pkts_tot                        0.0175
+  bwd_pkts_tot                        0.0140
+  fwd_pkts_payload.std                0.0117
+  bwd_header_size_tot                 0.0107
+  flow_ACK_flag_count                 0.0103
+  flow_RST_flag_count                 0.0054
+  flow_FIN_flag_count                 0.0022
+  idle.avg                            0.0010
