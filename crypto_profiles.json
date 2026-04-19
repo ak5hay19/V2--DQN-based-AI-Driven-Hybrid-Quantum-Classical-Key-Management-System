@@ -30,9 +30,9 @@
         "max_security_level": 5
     },
     "threat_vulnerability": {
-        "classical": { "benign": 0.95, "recon": 0.70, "active_attack": 0.15 },
-        "pqc":       { "benign": 0.75, "recon": 0.80, "active_attack": 0.72 },
-        "qkd":       { "benign": 0.20, "recon": 0.30, "active_attack": 1.00 },
+        "classical": { "benign": 0.98, "recon": 0.70, "active_attack": 0.15 },
+        "pqc":       { "benign": 0.65, "recon": 0.85, "active_attack": 0.72 },
+        "qkd":       { "benign": 0.20, "recon": 0.30, "active_attack": 0.90 },
         "reuse":     { "benign": 0.88, "recon": 0.30, "active_attack": 0.05 },
         "refresh":   { "benign": 0.60, "recon": 0.55, "active_attack": 0.45 }
     },
