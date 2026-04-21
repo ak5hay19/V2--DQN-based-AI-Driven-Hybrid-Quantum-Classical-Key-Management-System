@@ -8,9 +8,12 @@ to always-PQC early in training.
 
 import argparse
 import numpy as np
+import torch
 import hybrid_env
 from hybrid_env import HybridKeyEnv, NUM_ACTIONS, ACTION_NAMES
 from dqn_agent import DQNAgent
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--use-lstm", action="store_true")
@@ -43,13 +46,14 @@ agent = DQNAgent(
     batch_size=64,
     buffer_size=80000,     # larger buffer to remember more diverse experiences
     target_update=300,     # update target less frequently for stability
+    device=device
 )
 
 print(f"\nTraining DQN agent...")
+print(f"Using device: {agent.device}")
 print(f"  Episodes     : {args.episodes}")
 print(f"  State dim    : {STATE_DIM}")
 print(f"  Network      : {STATE_DIM} -> 128 -> 64 -> {NUM_ACTIONS}")
-print(f"  Device       : {agent.device}")
 print(f"  Eps decay    : {agent.epsilon_decay} (reaches 0.05 ~ep 1500)")
 print(f"  Buffer       : {agent.buffer.buffer.maxlen:,}")
 print(f"  Target update: every {agent.target_update} steps")

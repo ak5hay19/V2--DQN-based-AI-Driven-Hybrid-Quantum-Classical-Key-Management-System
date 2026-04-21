@@ -113,7 +113,7 @@ class DQNAgent:
             return random.randint(0, self.num_actions - 1)
 
         with torch.no_grad():
-            s = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+            s = torch.as_tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
             q_values = self.policy_net(s)
             return int(q_values.argmax(dim=1).item())
 
@@ -128,11 +128,11 @@ class DQNAgent:
 
         states, actions, rewards, next_states, dones = self.buffer.sample(self.batch_size)
 
-        s  = torch.FloatTensor(states).to(self.device)
-        a  = torch.LongTensor(actions).to(self.device)
-        r  = torch.FloatTensor(rewards).to(self.device)
-        ns = torch.FloatTensor(next_states).to(self.device)
-        d  = torch.FloatTensor(dones).to(self.device)
+        s  = torch.as_tensor(states, dtype=torch.float32, device=self.device)
+        a  = torch.as_tensor(actions, dtype=torch.int64, device=self.device)
+        r  = torch.as_tensor(rewards, dtype=torch.float32, device=self.device)
+        ns = torch.as_tensor(next_states, dtype=torch.float32, device=self.device)
+        d  = torch.as_tensor(dones, dtype=torch.float32, device=self.device)
 
         # Current Q-values for chosen actions
         q_current = self.policy_net(s).gather(1, a.unsqueeze(1)).squeeze(1)
