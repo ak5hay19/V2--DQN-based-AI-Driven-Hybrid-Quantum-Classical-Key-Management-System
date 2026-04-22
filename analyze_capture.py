@@ -154,8 +154,16 @@ def main():
         skr=float(np.clip(0.85-2*(qber-0.03)+np.random.normal(0,0.02),0.3,1.0))
         pqc=float(np.clip((0.4+0.45*pkt+0.18*threat)*np.random.normal(1,0.08),0.3,0.9))
         p = pred.predict(list(th)) if pred and len(th)>=5 else None
-        state = np.array([threat,qber,skr,pkt,lat,pqc,min(key_age/10,1)],dtype=np.float32)
-        if p is not None: state = np.append(state, float(p))
+        
+        base_state = [threat,qber,skr,pkt,lat,pqc,min(key_age/10,1)]
+        
+        # 🔥 FIX: ALWAYS match state dimension
+        if args.use_lstm:
+            pred_val = float(p) if p is not None else 0.0
+            state = np.array(base_state + [pred_val], dtype=np.float32)
+        else:
+            state = np.array(base_state, dtype=np.float32)
+            
         action, known = agent.act(state); ac[action]+=1
         if action==4: key_age=0
         else: key_age+=1
