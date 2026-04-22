@@ -93,19 +93,50 @@ def extract_csv(path, max_flows):
 
 
 class ThreatScorer:
-    def __init__(self, path="threat_model.pkl"):
+    # ── keyword lists (same as threat_classifier.py) ──
+    _HIGH = ["ddos","dos","flood","syn_hping","exploit","ransomware","botnet","backdoor","injection","brute","password"]
+    _MED  = ["scan","nmap","recon","probe","portscan","fingerprint","discovery","arp","spoof","mitm","os_","wipro","bulb"]
+    _LOW  = ["mqtt","thing_speak","weather","normal","benign"]
+
+    def __init__(self, path="threat_model.pkl", alpha=0.2):
         with open(path,"rb") as f: b=pickle.load(f)
         self.clf,self.scaler,self.feature_names = b["classifier"],b["scaler"],b["feature_names"]
         self.rl_norm = b["rl_norm_params"]; self.n_classes = b.get("n_classes",2); self._c=False
+        self.alpha = alpha                       # rule-based weight
+
+    # ── rule-based severity from attack_type keyword ──
+    @staticmethod
+    def _rule_severity(attack_type):
+        """Map Attack_type string → numeric severity using keyword matching."""
+        v = str(attack_type).strip().lower().replace(" ","_")
+        if any(k in v for k in ThreatScorer._LOW):  return 0.0
+        if any(k in v for k in ThreatScorer._HIGH): return 1.0
+        if any(k in v for k in ThreatScorer._MED):  return 0.5
+        return 0.5                                # unknown → MEDIUM
+
     def score(self, row):
         if not self._c:
             self._c=True; miss=[f for f in self.feature_names if f not in row]
             if miss: print(f"  WARN: {len(miss)} features missing: {miss[:5]}")
             else: print(f"  Features OK: all {len(self.feature_names)} matched")
+
+        # ── ML-based severity (from RF probabilities) ──
         feats={f:[float(row.get(f,0.0) if row.get(f,0.0) is not None and not (isinstance(row.get(f,0.0),float) and np.isnan(row.get(f,0.0))) else 0.0)] for f in self.feature_names}
         proba = self.clf.predict_proba(self.scaler.transform(pd.DataFrame(feats)))[0]
-        if self.n_classes==2: return float(np.clip(proba[1],0,1))
-        return float(np.clip(np.dot(proba,np.linspace(0,1,self.n_classes)),0,1))
+        if self.n_classes==2:
+            severity_ml = float(proba[1])
+        else:
+            severity_ml = float(np.dot(proba, np.linspace(0, 1, self.n_classes)))
+
+        # ── rule-based severity (from Attack_type keyword) ──
+        attack_type = row.get("Attack_type") or row.get("_ground_truth")
+        if attack_type and str(attack_type) not in ("", "?"):
+            severity_rule = self._rule_severity(attack_type)
+            severity_final = self.alpha * severity_rule + (1 - self.alpha) * severity_ml
+        else:
+            severity_final = severity_ml           # fallback: ML-only
+
+        return float(np.clip(severity_final, 0, 1))
 
 
 class RLAgent:
